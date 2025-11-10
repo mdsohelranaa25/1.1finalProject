@@ -1,4 +1,4 @@
-// TeacherRegistrationFrame.java
+// TeacherRegistrationFrame.java - Updated with Course Selection
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -10,7 +10,7 @@ public class TeacherRegistrationFrame extends JFrame {
     private JTextField nameField;
     private JTextField usernameField;
     private JPasswordField passwordField;
-    private JTextField subjectField;
+    private JComboBox<String> courseCombo;
     private JComboBox<String> departmentCombo;
     
     public TeacherRegistrationFrame() {
@@ -43,12 +43,12 @@ public class TeacherRegistrationFrame extends JFrame {
         headerPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
         
         JLabel titleLabel = new JLabel("👨‍🏫 TEACHER REGISTRATION");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 28));
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         JLabel subtitleLabel = new JLabel("Join our faculty team");
-        subtitleLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        subtitleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         subtitleLabel.setForeground(new Color(255, 255, 255, 200));
         subtitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         
@@ -81,14 +81,37 @@ public class TeacherRegistrationFrame extends JFrame {
         // Password
         addFormField(formPanel, "🔒 Password:", passwordField = new JPasswordField(20), gbc, 2);
         
-        // Subject
-        addFormField(formPanel, "📚 Subject/Course:", subjectField = new JTextField(20), gbc, 3);
+        // Course Selection (MOST IMPORTANT!)
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0.3;
+        JLabel courseLabel = new JLabel("📚 Teaching Course:");
+        courseLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        courseLabel.setForeground(new Color(44, 62, 80));
+        formPanel.add(courseLabel, gbc);
+        
+        gbc.gridx = 1;
+        gbc.weightx = 0.7;
+        courseCombo = new JComboBox<>(CoursesConfig.getCoursesArray());
+        courseCombo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        courseCombo.setPreferredSize(new Dimension(300, 35));
+        formPanel.add(courseCombo, gbc);
         
         // Department
-        String[] departments = {"CSE", "EEE", "BBA", "Civil", "Mechanical", "Textile", "IPE"};
+        String[] departments = {"CSE", "EEE", "BBA", "Civil", "Mechanical"};
         departmentCombo = new JComboBox<>(departments);
-        departmentCombo.setFont(new Font("Arial", Font.PLAIN, 14));
+        departmentCombo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         addFormField(formPanel, "🏛️ Department:", departmentCombo, gbc, 4);
+        
+        // Info Label
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.gridwidth = 2;
+        JLabel infoLabel = new JLabel("<html>💡 <b>Note:</b> You can only manage attendance for your selected course.</html>");
+        infoLabel.setFont(new Font("Segoe UI", Font.ITALIC, 12));
+        infoLabel.setForeground(new Color(127, 140, 141));
+        formPanel.add(infoLabel, gbc);
         
         // Buttons Panel
         JPanel buttonPanel = new JPanel();
@@ -107,7 +130,7 @@ public class TeacherRegistrationFrame extends JFrame {
         buttonPanel.add(cancelButton);
         
         gbc.gridx = 0;
-        gbc.gridy = 5;
+        gbc.gridy = 6;
         gbc.gridwidth = 2;
         formPanel.add(buttonPanel, gbc);
         
@@ -121,15 +144,15 @@ public class TeacherRegistrationFrame extends JFrame {
         gbc.weightx = 0.3;
         
         JLabel label = new JLabel(labelText);
-        label.setFont(new Font("Arial", Font.BOLD, 14));
+        label.setFont(new Font("Segoe UI", Font.BOLD, 14));
         label.setForeground(new Color(44, 62, 80));
         panel.add(label, gbc);
         
         gbc.gridx = 1;
         gbc.weightx = 0.7;
-        field.setFont(new Font("Arial", Font.PLAIN, 14));
+        field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         if (field instanceof JTextField || field instanceof JPasswordField) {
-            field.setPreferredSize(new Dimension(200, 35));
+            field.setPreferredSize(new Dimension(300, 35));
         }
         panel.add(field, gbc);
     }
@@ -138,11 +161,11 @@ public class TeacherRegistrationFrame extends JFrame {
         String name = nameField.getText().trim();
         String username = usernameField.getText().trim();
         String password = new String(passwordField.getPassword()).trim();
-        String subject = subjectField.getText().trim();
+        String course = (String) courseCombo.getSelectedItem();
         String department = (String) departmentCombo.getSelectedItem();
         
         // Validation
-        if (name.isEmpty() || username.isEmpty() || password.isEmpty() || subject.isEmpty()) {
+        if (name.isEmpty() || username.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(this,
                 "Please fill all fields!",
                 "Validation Error",
@@ -167,15 +190,15 @@ public class TeacherRegistrationFrame extends JFrame {
             return;
         }
         
-        // Save to file
-        if (FileManager.saveTeacher(username, password, name, subject, department)) {
+        // Save to file (course instead of generic subject)
+        if (FileManager.saveTeacher(username, password, name, course, department)) {
             JOptionPane.showMessageDialog(this,
                 "🎉 Registration Successful!\n\n" +
                 "Name: " + name + "\n" +
                 "Username: " + username + "\n" +
-                "Subject: " + subject + "\n" +
+                "Teaching Course: " + course + "\n" +
                 "Department: " + department + "\n\n" +
-                "You can now login with your credentials.",
+                "You can now login and manage attendance for your course.",
                 "Success",
                 JOptionPane.INFORMATION_MESSAGE);
             dispose();
@@ -189,7 +212,7 @@ public class TeacherRegistrationFrame extends JFrame {
     
     private JButton createStyledButton(String text, Color bgColor) {
         JButton button = new JButton(text);
-        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setFont(new Font("Segoe UI", Font.BOLD, 14));
         button.setBackground(bgColor);
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);

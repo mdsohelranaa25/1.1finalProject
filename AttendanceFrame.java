@@ -1,4 +1,4 @@
-// AttendanceFrame.java
+// AttendanceFrame.java - Student can only VIEW attendance
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -12,7 +12,7 @@ public class AttendanceFrame extends JFrame {
     public AttendanceFrame(Map<String, String> userInfo) {
         this.userInfo = userInfo;
         
-        setTitle("Attendance Management - " + userInfo.get("name"));
+        setTitle("My Attendance - " + userInfo.get("name"));
         setSize(1200, 800);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -36,7 +36,7 @@ public class AttendanceFrame extends JFrame {
         headerPanel.setPreferredSize(new Dimension(1200, 100));
         headerPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
         
-        JLabel titleLabel = new JLabel("✅ ATTENDANCE MANAGEMENT");
+        JLabel titleLabel = new JLabel("✅ MY ATTENDANCE");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 32));
         titleLabel.setForeground(Color.WHITE);
         
@@ -59,32 +59,68 @@ public class AttendanceFrame extends JFrame {
         gbc.insets = new Insets(15, 15, 15, 15);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         
-        // Attendance Options
+        // Info message
+        JPanel infoPanel = new JPanel();
+        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+        infoPanel.setBackground(new Color(230, 247, 255));
+        infoPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(52, 152, 219), 2),
+            BorderFactory.createEmptyBorder(15, 20, 15, 20)
+        ));
+        infoPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
+        
+        JLabel infoIcon = new JLabel("ℹ️");
+        infoIcon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 30));
+        infoIcon.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        JLabel infoLabel = new JLabel("Attendance is marked by your teachers");
+        infoLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        infoLabel.setForeground(new Color(52, 152, 219));
+        infoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        JLabel infoSubLabel = new JLabel("You can view your attendance records below");
+        infoSubLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        infoSubLabel.setForeground(new Color(127, 140, 141));
+        infoSubLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        infoPanel.add(infoIcon);
+        infoPanel.add(Box.createVerticalStrut(8));
+        infoPanel.add(infoLabel);
+        infoPanel.add(Box.createVerticalStrut(3));
+        infoPanel.add(infoSubLabel);
+        
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 3;
+        contentPanel.add(infoPanel, gbc);
+        
+        // Attendance View Options (Student can only VIEW)
         String[][] options = {
-            {"📊", "View Attendance", "Check your attendance record"},
-            {"📈", "Attendance Percentage", "View attendance statistics"},
+            {"📊", "View All Records", "See complete attendance"},
+            {"📈", "Course-wise Stats", "View by each course"},
             {"📅", "Monthly Report", "View monthly attendance"},
-            {"📝", "Course-wise", "Attendance by course"},
-            {"⚠️", "Low Attendance Alert", "Check if below 75%"},
-            {"📄", "Generate Report", "Download attendance report"}
+            {"⚠️", "Low Attendance Alert", "Check courses below 75%"},
+            {"📄", "Percentage Report", "View attendance percentage"}
         };
         
         Color[] colors = {
             new Color(46, 204, 113),
             new Color(52, 152, 219),
             new Color(155, 89, 182),
-            new Color(241, 196, 15),
             new Color(231, 76, 60),
-            new Color(26, 188, 156)
+            new Color(241, 196, 15)
         };
         
-        int row = 0;
+        gbc.gridwidth = 1;
+        int row = 1;
         for (int i = 0; i < options.length; i++) {
             gbc.gridx = i % 3;
             gbc.gridy = row;
             
+            final int index = i;
             JPanel optionCard = createOptionCard(options[i][0], options[i][1], 
-                                                 options[i][2], colors[i]);
+                                                 options[i][2], colors[i],
+                                                 () -> handleOptionClick(index));
             contentPanel.add(optionCard, gbc);
             
             if ((i + 1) % 3 == 0) row++;
@@ -93,7 +129,28 @@ public class AttendanceFrame extends JFrame {
         return contentPanel;
     }
     
-    private JPanel createOptionCard(String icon, String title, String subtitle, Color color) {
+    private void handleOptionClick(int index) {
+        switch (index) {
+            case 0: // View All Records
+                new ViewAttendanceFrame(userInfo);
+                break;
+            case 1: // Course-wise Stats
+                new CourseWiseAttendanceFrame(userInfo);
+                break;
+            case 2: // Monthly Report
+                new MonthlyAttendanceFrame(userInfo);
+                break;
+            case 3: // Low Attendance Alert
+                new LowAttendanceAlertFrame(userInfo);
+                break;
+            case 4: // Percentage Report
+                new AttendancePercentageFrame(userInfo);
+                break;
+        }
+    }
+    
+    private JPanel createOptionCard(String icon, String title, String subtitle, 
+                                    Color color, Runnable onClick) {
         JPanel card = new JPanel();
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setBackground(Color.WHITE);
@@ -142,20 +199,11 @@ public class AttendanceFrame extends JFrame {
                 ));
             }
             public void mouseClicked(MouseEvent e) {
-                showComingSoon(title);
+                onClick.run();
             }
         });
         
         return card;
-    }
-    
-    private void showComingSoon(String feature) {
-        JOptionPane.showMessageDialog(this,
-            "🔜 Coming Soon!\n\n" +
-            feature + " feature is under development.\n" +
-            "Stay tuned for updates!",
-            feature,
-            JOptionPane.INFORMATION_MESSAGE);
     }
     
     private JButton createStyledButton(String text, Color bgColor) {

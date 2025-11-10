@@ -3,6 +3,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Map;
+
 public class TeacherDashboardFrame extends JFrame {
     private Map<String, String> teacherInfo;
     private Color primaryColor = new Color(142, 68, 173);
@@ -12,7 +13,7 @@ public class TeacherDashboardFrame extends JFrame {
         this.teacherInfo = teacherInfo;
         
         setTitle("Teacher Dashboard - " + teacherInfo.get("name"));
-        setSize(1200, 800);
+        setSize(1400, 900);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         
@@ -35,42 +36,45 @@ public class TeacherDashboardFrame extends JFrame {
     private JPanel createHeaderPanel() {
         JPanel headerPanel = new JPanel();
         headerPanel.setBackground(primaryColor);
-        headerPanel.setPreferredSize(new Dimension(1200, 120));
+        headerPanel.setPreferredSize(new Dimension(1400, 140));
         headerPanel.setLayout(new BorderLayout());
-        headerPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
+        headerPanel.setBorder(BorderFactory.createEmptyBorder(25, 40, 25, 40));
         
         // Left side - User Info
         JPanel userInfoPanel = new JPanel();
         userInfoPanel.setLayout(new BoxLayout(userInfoPanel, BoxLayout.Y_AXIS));
         userInfoPanel.setBackground(primaryColor);
         
-        JLabel welcomeLabel = new JLabel("👨‍🏫 TEACHER DASHBOARD");
-        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 28));
+        JLabel logoLabel = new JLabel("👨‍🏫");
+        logoLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 40));
+        
+        JLabel welcomeLabel = new JLabel("  TEACHER DASHBOARD");
+        welcomeLabel.setFont(new Font("Segoe UI", Font.BOLD, 32));
         welcomeLabel.setForeground(Color.WHITE);
         
+        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        titlePanel.setBackground(primaryColor);
+        titlePanel.add(logoLabel);
+        titlePanel.add(welcomeLabel);
+        
         JLabel nameLabel = new JLabel("👤 " + teacherInfo.get("name"));
-        nameLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-        nameLabel.setForeground(new Color(255, 255, 255, 230));
+        nameLabel.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+        nameLabel.setForeground(new Color(255, 255, 255, 240));
         
         JLabel infoLabel = new JLabel("📚 Subject: " + teacherInfo.get("field1") + 
                                       " | Department: " + teacherInfo.get("field2"));
-        infoLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        infoLabel.setForeground(new Color(255, 255, 255, 200));
+        infoLabel.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        infoLabel.setForeground(new Color(255, 255, 255, 210));
         
-        userInfoPanel.add(welcomeLabel);
-        userInfoPanel.add(Box.createVerticalStrut(5));
+        userInfoPanel.add(titlePanel);
+        userInfoPanel.add(Box.createVerticalStrut(8));
         userInfoPanel.add(nameLabel);
+        userInfoPanel.add(Box.createVerticalStrut(3));
         userInfoPanel.add(infoLabel);
         
         // Right side - Logout Button
-        JButton logoutButton = new JButton("🚪 Logout");
-        logoutButton.setFont(new Font("Arial", Font.BOLD, 14));
-        logoutButton.setBackground(new Color(231, 76, 60));
-        logoutButton.setForeground(Color.WHITE);
-        logoutButton.setFocusPainted(false);
-        logoutButton.setBorderPainted(false);
-        logoutButton.setPreferredSize(new Dimension(120, 40));
-        logoutButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        JButton logoutButton = createStyledButton("🚪 Logout", new Color(231, 76, 60));
+        logoutButton.setPreferredSize(new Dimension(140, 50));
         logoutButton.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(
                 this,
@@ -80,7 +84,7 @@ public class TeacherDashboardFrame extends JFrame {
             );
             if (confirm == JOptionPane.YES_OPTION) {
                 dispose();
-                new MainFrame();
+                System.exit(0);
             }
         });
         
@@ -92,11 +96,10 @@ public class TeacherDashboardFrame extends JFrame {
     
     private JPanel createMenuPanel() {
         JPanel menuPanel = new JPanel();
-        menuPanel.setLayout(new GridLayout(3, 3, 20, 20));
+        menuPanel.setLayout(new GridLayout(3, 3, 25, 25));
         menuPanel.setBackground(backgroundColor);
-        menuPanel.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
+        menuPanel.setBorder(BorderFactory.createEmptyBorder(40, 50, 40, 50));
         
-        // Create menu cards
         String[][] menuItems = {
             {"➕", "Create Routine", "Create new class schedule"},
             {"📅", "View Routine", "Check teaching schedule"},
@@ -122,66 +125,104 @@ public class TeacherDashboardFrame extends JFrame {
         };
         
         for (int i = 0; i < menuItems.length; i++) {
+            final int index = i;
             JPanel card = createMenuCard(menuItems[i][0], menuItems[i][1], 
-                                        menuItems[i][2], colors[i]);
+                                        menuItems[i][2], colors[i], () -> handleMenuClick(index));
             menuPanel.add(card);
         }
         
         return menuPanel;
     }
     
-    private JPanel createMenuCard(String icon, String title, String subtitle, Color color) {
+    private JPanel createMenuCard(String icon, String title, String subtitle, Color color, Runnable onClick) {
         JPanel card = new JPanel();
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setBackground(Color.WHITE);
         card.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(189, 195, 199), 1),
-            BorderFactory.createLineBorder(Color.WHITE, 19)
+            BorderFactory.createLineBorder(new Color(189, 195, 199), 2),
+            BorderFactory.createEmptyBorder(25, 25, 25, 25)
         ));
         card.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
         JLabel iconLabel = new JLabel(icon);
-        iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 50));
+        iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 55));
         iconLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         JLabel titleLabel = new JLabel(title);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
         titleLabel.setForeground(color);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         JLabel subtitleLabel = new JLabel("<html><center>" + subtitle + "</center></html>");
-        subtitleLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        subtitleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         subtitleLabel.setForeground(new Color(127, 140, 141));
         subtitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         
+        card.add(Box.createVerticalGlue());
         card.add(iconLabel);
-        card.add(Box.createVerticalStrut(10));
+        card.add(Box.createVerticalStrut(15));
         card.add(titleLabel);
-        card.add(Box.createVerticalStrut(5));
+        card.add(Box.createVerticalStrut(8));
         card.add(subtitleLabel);
+        card.add(Box.createVerticalGlue());
         
-        // Click effect
         card.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent e) {
-                card.setBackground(new Color(245, 245, 245));
+                card.setBackground(new Color(248, 249, 250));
+                card.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(color, 2),
+                    BorderFactory.createEmptyBorder(25, 25, 25, 25)
+                ));
             }
             public void mouseExited(MouseEvent e) {
                 card.setBackground(Color.WHITE);
+                card.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(189, 195, 199), 2),
+                    BorderFactory.createEmptyBorder(25, 25, 25, 25)
+                ));
             }
             public void mouseClicked(MouseEvent e) {
-                showComingSoon(title);
+                onClick.run();
             }
         });
         
         return card;
     }
     
-    private void showComingSoon(String feature) {
-        JOptionPane.showMessageDialog(this,
-            "🔜 Coming Soon!\n\n" +
-            "The " + feature + " feature is under development.\n" +
-            "Stay tuned for updates!",
-            feature,
-            JOptionPane.INFORMATION_MESSAGE);
+    private void handleMenuClick(int index) {
+        switch (index) {
+            case 2: // Attendance - Teacher marks for students
+                new TeacherMarkAttendanceFrame(teacherInfo);
+                break;
+            case 7: // Notifications
+                new NotificationsFrame(teacherInfo);
+                break;
+            default:
+                JOptionPane.showMessageDialog(this,
+                    "🔜 Coming Soon!\n\nThis feature is under development.",
+                    "Coming Soon",
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+    
+    private JButton createStyledButton(String text, Color bgColor) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        button.setBackground(bgColor);
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        
+        button.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                button.setBackground(bgColor.darker());
+            }
+            public void mouseExited(MouseEvent e) {
+                button.setBackground(bgColor);
+            }
+        });
+        
+        return button;
     }
 }
