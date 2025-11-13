@@ -234,3 +234,13 @@ public class ViewAttendanceFrame extends JFrame {
         return button;
     }
 }
+
+class AttendanceManager {
+   
+    public static List<Map<String, String>> getStudentAttendance(String username) {
+        // Example of returned map fields expected by ViewAttendanceFrame:
+        // "date", "course", "status", "markedBy", "timestamp"
+        // For now return an empty list so the UI will show the empty state.
+        return new ArrayList<>();
+    }
+}

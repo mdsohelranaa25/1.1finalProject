@@ -99,7 +99,7 @@ public class AttendanceFrame extends JFrame {
             {"📊", "View All Records", "See complete attendance"},
             {"📈", "Course-wise Stats", "View by each course"},
             {"📅", "Monthly Report", "View monthly attendance"},
-            {"⚠️", "Low Attendance Alert", "Check courses below 75%"},
+           // {"⚠️", "Low Attendance Alert", "Check courses below 75%"},
             {"📄", "Percentage Report", "View attendance percentage"}
         };
         
@@ -140,10 +140,10 @@ public class AttendanceFrame extends JFrame {
             case 2: // Monthly Report
                 new MonthlyAttendanceFrame(userInfo);
                 break;
-            case 3: // Low Attendance Alert
-                new LowAttendanceAlertFrame(userInfo);
-                break;
-            case 4: // Percentage Report
+            // case 3: // Low Attendance Alert
+            //     new LowAttendanceAlertFrame(userInfo);
+            //     break;
+            case 3: // Percentage Report
                 new AttendancePercentageFrame(userInfo);
                 break;
         }
