@@ -1,0 +1,16 @@
+Saturday,08:00 AM - 09:00 AM,Engineering Mathematics,mms,Lab 1,CSE,1st,A,1762995369343
+Sunday,10:00 AM - 11:00 AM,OOP - Object Oriented Programming,mms,Lab 2,CSE,1st,A,1762995396460
+Monday,11:00 AM - 12:00 PM,Engineering Mathematics,mms,Lab 1,CSE,1st,A,1762995411682
+Tuesday,09:00 AM - 10:00 AM,Engineering Mathematics,mms,Room 301,CSE,1st,A,1762995425144
+Sunday,09:00 AM - 10:00 AM,OOP - Object Oriented Programming,Shamim12,Lab 1,CSE,1st,A,1762995486770
+Monday,11:00 AM - 12:00 PM,OOP - Object Oriented Programming,Shamim12,Room 301,CSE,1st,A,1762995497438
+Tuesday,09:00 AM - 10:00 AM,OOP - Object Oriented Programming,Shamim12,Lab 3,CSE,1st,A,1762995508725
+Wednesday,12:00 PM - 01:00 PM,OOP - Object Oriented Programming,Shamim12,Lab 3,CSE,1st,A,1762995520735
+Thursday,02:00 PM - 03:00 PM,OOP - Object Oriented Programming,Shamim12,Lab 3,CSE,1st,A,1762995539443
+Sunday,02:00 PM - 03:00 PM,EDC Lab,msk,Room 304,CSE,1st,A,1762995878159
+Sunday,03:00 PM - 04:00 PM,OOP - Object Oriented Programming,msk,Room 304,CSE,1st,A,1762995892783
+Sunday,08:00 AM - 09:00 AM,Discrete Mathematics,kma,Lab 1,CSE,1st,A,1762995957693
+Monday,09:00 AM - 10:00 AM,Discrete Mathematics,kma,Lab 3,CSE,1st,A,1762995984234
+Wednesday,11:00 AM - 12:00 PM,OOP - Object Oriented Programming,kma,Lab 2,CSE,1st,A,1762995995878
+Monday,02:00 PM - 03:00 PM,OOP Lab,Shamim12,Lab 3,CSE,1st,A,1762996048852
+Monday,03:00 PM - 04:00 PM,OOP - Object Oriented Programming,Shamim12,Lab 3,CSE,1st,A,1762996061727

@@ -91,3 +91,48 @@ public class StudentDashboard {
         System.out.println();
     }
 }
+
+// Simple stub implementations to satisfy compile-time references.
+// Replace these with real implementations as you develop the application.
+
+class ViewRoutine {
+    public void show() {
+        System.out.println("ViewRoutine: feature not implemented yet.");
+    }
+}
+
+class AttendanceManagement {
+    public void show() {
+        System.out.println("AttendanceManagement: feature not implemented yet.");
+    }
+}
+
+class CourseManagement {
+    public void show() {
+        System.out.println("CourseManagement: feature not implemented yet.");
+    }
+}
+
+class ExamSchedule {
+    public void show() {
+        System.out.println("ExamSchedule: feature not implemented yet.");
+    }
+}
+
+class ProfileManagement {
+    public void show() {
+        System.out.println("ProfileManagement: feature not implemented yet.");
+    }
+}
+
+class Notifications {
+    public void show() {
+        System.out.println("Notifications: feature not implemented yet.");
+    }
+}
+
+class Reports {
+    public void show() {
+        System.out.println("Reports: feature not implemented yet.");
+    }
+}

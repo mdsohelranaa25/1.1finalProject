@@ -1,2 +1,5 @@
 Shamim12,shamim123,Shamim Al Mamun,Object oriented programming,CSE
 shamim12,shamim123,Shamim Al Mamun,OOP - Object Oriented Programming,CSE
+mms,mms123,MMS,Engineering Mathematics,CSE
+kma,kma123,KMA,Discrete Mathematics,CSE
+msk,msk123,Dr. M Shamim Kaiser,EDC Lab,CSE

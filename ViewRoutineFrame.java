@@ -1,30 +1,38 @@
-// ViewRoutineFrame.java
+// ViewRoutineFrame.java - Student views routine (Weekly Timetable)
 import javax.swing.*;
+import javax.swing.table.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.util.Map;
+import java.util.*;
+import java.util.List;
 
 public class ViewRoutineFrame extends JFrame {
     private Map<String, String> userInfo;
     private Color primaryColor = new Color(52, 152, 219);
-    private Color backgroundColor = new Color(236, 240, 241);
+    
+    private JComboBox<String> departmentCombo;
+    private JComboBox<String> semesterCombo;
+    private JComboBox<String> sectionCombo;
+    private JTable routineTable;
     
     public ViewRoutineFrame(Map<String, String> userInfo) {
         this.userInfo = userInfo;
         
         setTitle("View Routine - " + userInfo.get("name"));
-        setSize(1200, 800);
+        setSize(1400, 850);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         
         JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBackground(backgroundColor);
+        mainPanel.setBackground(new Color(236, 240, 241));
         
         // Header
         mainPanel.add(createHeaderPanel(), BorderLayout.NORTH);
         
-        // Content
-        mainPanel.add(createContentPanel(), BorderLayout.CENTER);
+        // Filter Panel
+        mainPanel.add(createFilterPanel(), BorderLayout.WEST);
+        
+        // Routine Table (Weekly View)
+        mainPanel.add(createWeeklyRoutinePanel(), BorderLayout.CENTER);
         
         add(mainPanel);
         setVisible(true);
@@ -33,15 +41,14 @@ public class ViewRoutineFrame extends JFrame {
     private JPanel createHeaderPanel() {
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(primaryColor);
-        headerPanel.setPreferredSize(new Dimension(1200, 100));
-        headerPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
+        headerPanel.setPreferredSize(new Dimension(1400, 80));
+        headerPanel.setBorder(BorderFactory.createEmptyBorder(20, 25, 20, 25));
         
-        JLabel titleLabel = new JLabel("📅 VIEW ROUTINE");
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 32));
+        JLabel titleLabel = new JLabel("📅 CLASS ROUTINE - WEEKLY VIEW");
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 28));
         titleLabel.setForeground(Color.WHITE);
         
-        JButton backButton = createStyledButton("← Back", new Color(52, 73, 94));
-        backButton.setPreferredSize(new Dimension(120, 45));
+        JButton backButton = createStyledButton("← Back");
         backButton.addActionListener(e -> dispose());
         
         headerPanel.add(titleLabel, BorderLayout.WEST);
@@ -50,112 +57,199 @@ public class ViewRoutineFrame extends JFrame {
         return headerPanel;
     }
     
-    private JPanel createContentPanel() {
-        JPanel contentPanel = new JPanel(new GridBagLayout());
-        contentPanel.setBackground(Color.WHITE);
-        contentPanel.setBorder(BorderFactory.createEmptyBorder(40, 50, 40, 50));
-        
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(15, 15, 15, 15);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        
-        // View Options
-        String[][] options = {
-            {"📆", "Daily View", "View today's schedule"},
-            {"📅", "Weekly View", "View complete week schedule"},
-            {"📊", "Monthly View", "View entire month schedule"},
-            {"🏛️", "Department-wise", "View by department"},
-            {"👨‍🏫", "Teacher-wise", "View by teacher"},
-            {"🚪", "Room-wise", "View by room allocation"}
-        };
-        
-        Color[] colors = {
-            new Color(52, 152, 219),
-            new Color(46, 204, 113),
-            new Color(155, 89, 182),
-            new Color(241, 196, 15),
-            new Color(230, 126, 34),
-            new Color(231, 76, 60)
-        };
-        
-        int row = 0;
-        for (int i = 0; i < options.length; i++) {
-            gbc.gridx = i % 3;
-            gbc.gridy = row;
-            
-            JPanel optionCard = createOptionCard(options[i][0], options[i][1], 
-                                                 options[i][2], colors[i]);
-            contentPanel.add(optionCard, gbc);
-            
-            if ((i + 1) % 3 == 0) row++;
-        }
-        
-        return contentPanel;
-    }
-    
-    private JPanel createOptionCard(String icon, String title, String subtitle, Color color) {
-        JPanel card = new JPanel();
-        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-        card.setBackground(Color.WHITE);
-        card.setPreferredSize(new Dimension(320, 200));
-        card.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(220, 220, 220), 2),
+    private JPanel createFilterPanel() {
+        JPanel filterPanel = new JPanel();
+        filterPanel.setLayout(new BoxLayout(filterPanel, BoxLayout.Y_AXIS));
+        filterPanel.setBackground(Color.WHITE);
+        filterPanel.setPreferredSize(new Dimension(280, 800));
+        filterPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createMatteBorder(0, 0, 0, 2, new Color(220, 220, 220)),
             BorderFactory.createEmptyBorder(20, 20, 20, 20)
         ));
-        card.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
-        JLabel iconLabel = new JLabel(icon);
-        iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 50));
-        iconLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel filterLabel = new JLabel("🔍 FILTERS");
+        filterLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        filterLabel.setForeground(primaryColor);
+        filterLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         
-        JLabel titleLabel = new JLabel(title);
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        titleLabel.setForeground(color);
-        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        filterPanel.add(filterLabel);
+        filterPanel.add(Box.createVerticalStrut(20));
         
-        JLabel subtitleLabel = new JLabel(subtitle);
-        subtitleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        subtitleLabel.setForeground(new Color(127, 140, 141));
-        subtitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        // Department (auto-select from student info)
+        addFilterLabel(filterPanel, "Department:");
+        String[] departments = {"CSE", "EEE", "BBA", "Civil", "Mechanical"};
+        departmentCombo = new JComboBox<>(departments);
+        departmentCombo.setSelectedItem(userInfo.get("field2")); // Student's department
+        departmentCombo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        departmentCombo.setMaximumSize(new Dimension(240, 40));
+        departmentCombo.setAlignmentX(Component.LEFT_ALIGNMENT);
+        filterPanel.add(departmentCombo);
+        filterPanel.add(Box.createVerticalStrut(15));
         
-        card.add(Box.createVerticalGlue());
-        card.add(iconLabel);
-        card.add(Box.createVerticalStrut(12));
-        card.add(titleLabel);
-        card.add(Box.createVerticalStrut(5));
-        card.add(subtitleLabel);
-        card.add(Box.createVerticalGlue());
+        // Semester
+        addFilterLabel(filterPanel, "Semester:");
+        String[] semesters = {"1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th"};
+        semesterCombo = new JComboBox<>(semesters);
+        semesterCombo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        semesterCombo.setMaximumSize(new Dimension(240, 40));
+        semesterCombo.setAlignmentX(Component.LEFT_ALIGNMENT);
+        filterPanel.add(semesterCombo);
+        filterPanel.add(Box.createVerticalStrut(15));
         
-        card.addMouseListener(new MouseAdapter() {
-            public void mouseEntered(MouseEvent e) {
-                card.setBackground(new Color(248, 249, 250));
-                card.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(color, 2),
-                    BorderFactory.createEmptyBorder(20, 20, 20, 20)
-                ));
+        // Section
+        addFilterLabel(filterPanel, "Section:");
+        String[] sections = {"A", "B", "C", "D"};
+        sectionCombo = new JComboBox<>(sections);
+        sectionCombo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        sectionCombo.setMaximumSize(new Dimension(240, 40));
+        sectionCombo.setAlignmentX(Component.LEFT_ALIGNMENT);
+        filterPanel.add(sectionCombo);
+        filterPanel.add(Box.createVerticalStrut(25));
+        
+        // Show Routine Button
+        JButton showButton = createStyledButton("📅 Show Routine", primaryColor);
+        showButton.setMaximumSize(new Dimension(240, 50));
+        showButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        showButton.addActionListener(e -> refreshRoutine());
+        filterPanel.add(showButton);
+        
+        return filterPanel;
+    }
+    
+    private void addFilterLabel(JPanel panel, String text) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        label.setForeground(new Color(44, 62, 80));
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
+        panel.add(label);
+        panel.add(Box.createVerticalStrut(5));
+    }
+    
+    private JScrollPane createWeeklyRoutinePanel() {
+        String department = (String) departmentCombo.getSelectedItem();
+        String semester = (String) semesterCombo.getSelectedItem();
+        String section = (String) sectionCombo.getSelectedItem();
+        
+        // Create table with Days as columns
+        String[] columnNames = new String[RoutineManager.DAYS.length + 1];
+        columnNames[0] = "Time";
+        System.arraycopy(RoutineManager.DAYS, 0, columnNames, 1, RoutineManager.DAYS.length);
+        
+        DefaultTableModel model = new DefaultTableModel(columnNames, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
             }
-            public void mouseExited(MouseEvent e) {
-                card.setBackground(Color.WHITE);
-                card.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(new Color(220, 220, 220), 2),
-                    BorderFactory.createEmptyBorder(20, 20, 20, 20)
-                ));
+        };
+        
+        // Get all routines for this dept/sem/sec
+        List<Map<String, String>> routines = RoutineManager.getRoutinesByFilter(
+            department, semester, section);
+        
+        // Create a map: timeSlot -> day -> class info
+        Map<String, Map<String, String>> schedule = new HashMap<>();
+        
+        for (Map<String, String> routine : routines) {
+            String timeSlot = routine.get("timeSlot");
+            String day = routine.get("day");
+            String classInfo = "<html><b>" + routine.get("course") + "</b><br>" +
+                              "Room: " + routine.get("room") + "<br>" +
+                              "Teacher: " + routine.get("teacher") + "</html>";
+            
+            schedule.putIfAbsent(timeSlot, new HashMap<>());
+            schedule.get(timeSlot).put(day, classInfo);
+        }
+        
+        // Populate table
+        for (String timeSlot : RoutineManager.TIME_SLOTS) {
+            Object[] row = new Object[RoutineManager.DAYS.length + 1];
+            row[0] = timeSlot;
+            
+            Map<String, String> dayClasses = schedule.get(timeSlot);
+            for (int i = 0; i < RoutineManager.DAYS.length; i++) {
+                if (dayClasses != null && dayClasses.containsKey(RoutineManager.DAYS[i])) {
+                    row[i + 1] = dayClasses.get(RoutineManager.DAYS[i]);
+                } else {
+                    row[i + 1] = "<html><center>—<br>Free</center></html>";
+                }
             }
-            public void mouseClicked(MouseEvent e) {
-                showComingSoon(title);
+            
+            model.addRow(row);
+        }
+        
+        routineTable = new JTable(model);
+        routineTable.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        routineTable.setRowHeight(80);
+        routineTable.setGridColor(new Color(220, 220, 220));
+        routineTable.setShowGrid(true);
+        
+        // Style header
+        JTableHeader header = routineTable.getTableHeader();
+        header.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        header.setBackground(primaryColor);
+        header.setForeground(Color.WHITE);
+        header.setPreferredSize(new Dimension(header.getWidth(), 45));
+        
+        // Column widths
+        routineTable.getColumnModel().getColumn(0).setPreferredWidth(150); // Time
+        for (int i = 1; i <= RoutineManager.DAYS.length; i++) {
+            routineTable.getColumnModel().getColumn(i).setPreferredWidth(180);
+        }
+        
+        // Custom renderer for cells
+        routineTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                                                          boolean isSelected, boolean hasFocus,
+                                                          int row, int column) {
+                Component c = super.getTableCellRendererComponent(table, value, 
+                                                                 isSelected, hasFocus, row, column);
+                
+                if (column == 0) {
+                    // Time column
+                    setFont(new Font("Segoe UI", Font.BOLD, 13));
+                    setBackground(new Color(240, 240, 240));
+                    setHorizontalAlignment(CENTER);
+                } else {
+                    setFont(new Font("Segoe UI", Font.PLAIN, 12));
+                    String text = value.toString();
+                    if (text.contains("Free")) {
+                        setBackground(new Color(250, 250, 250));
+                        setForeground(new Color(180, 180, 180));
+                    } else {
+                        setBackground(new Color(230, 247, 255));
+                        setForeground(Color.BLACK);
+                    }
+                    setHorizontalAlignment(CENTER);
+                    setVerticalAlignment(TOP);
+                }
+                
+                setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220)));
+                return c;
             }
         });
         
-        return card;
+        JScrollPane scrollPane = new JScrollPane(routineTable);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        
+        return scrollPane;
     }
     
-    private void showComingSoon(String feature) {
-        JOptionPane.showMessageDialog(this,
-            "🔜 Coming Soon!\n\n" +
-            feature + " feature is under development.\n" +
-            "Stay tuned for updates!",
-            feature,
-            JOptionPane.INFORMATION_MESSAGE);
+    private void refreshRoutine() {
+        // Remove old table
+        Container parent = routineTable.getParent().getParent();
+        ((JPanel) getContentPane()).remove((JComponent) parent);
+        
+        // Add new table
+        ((JPanel) getContentPane()).add(createWeeklyRoutinePanel(), BorderLayout.CENTER);
+        
+        // Refresh UI
+        revalidate();
+        repaint();
+    }
+    
+    private JButton createStyledButton(String text) {
+        return createStyledButton(text, new Color(52, 73, 94));
     }
     
     private JButton createStyledButton(String text, Color bgColor) {
@@ -163,15 +257,16 @@ public class ViewRoutineFrame extends JFrame {
         button.setFont(new Font("Segoe UI", Font.BOLD, 14));
         button.setBackground(bgColor);
         button.setForeground(Color.WHITE);
+        button.setPreferredSize(new Dimension(120, 40));
         button.setFocusPainted(false);
         button.setBorderPainted(false);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
-        button.addMouseListener(new MouseAdapter() {
-            public void mouseEntered(MouseEvent e) {
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent e) {
                 button.setBackground(bgColor.darker());
             }
-            public void mouseExited(MouseEvent e) {
+            public void mouseExited(java.awt.event.MouseEvent e) {
                 button.setBackground(bgColor);
             }
         });

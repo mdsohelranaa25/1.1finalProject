@@ -191,6 +191,12 @@ public class TeacherDashboardFrame extends JFrame {
     
     private void handleMenuClick(int index) {
         switch (index) {
+            case 0: // Create Routine
+                new CreateRoutineFrame(teacherInfo);
+                break;
+            case 1: // View Routine
+                new TeacherViewRoutineFrame(teacherInfo);
+                break;
             case 2: // Attendance - Teacher marks for students
                 new TeacherMarkAttendanceFrame(teacherInfo);
                 break;
